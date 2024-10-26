@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - .db_scripts:/docker-entrypoint-initdb.d
+    env_file:
+      - .env
+    user: ${POSTGRES_USER}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    expose:
+      - '5432'
+    ports:
+      - '8032:5432'
+    healthcheck:
+      # this command checks if the database is ready, right on the source db server
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    depends_on:
+      db:
+        condition: service_healthy
+    image: fastapi_app
+    volumes:
+      - ./src:/app/src
+    expose:
+      - '8000'
+    ports:
+      - '8002:8000'
+    build:
+      context: .
+    pull_policy: build
+    command: uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+
+
+networks:
+  app_db_network:
+    name: app_db_network
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
