@@ -1,6 +1,6 @@
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2 import Error
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from src.schemas.models import *
 
 
 class DBManager:
@@ -10,43 +10,14 @@ class DBManager:
         self.__password = password
         self.host = host
         self.port = port
-        # Подключение к существующей базе данных
-        connection = psycopg2.connect(user=user,
-                                      # пароль, который указали при установке PostgreSQL
-                                      password=password,
-                                      host=host,
-                                      port=port)
-        connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        # получаем курсор, который позволяет выполнять SQL команды
-        cursor = connection.cursor()
-        sql_create_database = 'create database postgres;'
-        try:
-            cursor.execute(sql_create_database)
-        except Error:
-            pass
-        finally:
-            if connection:
-                cursor.close()
-                connection.close()
+        self.engine = create_engine("postgresql+psycopg2://postgres:12345@localhost:5432/postgres")
+        self.session = Session(bind=self.engine)
+
 
     def get_programs(self) -> list:
         '''метод выдает записи компаний с количеством их вакансий'''
-        connection = psycopg2.connect(user=self.user,
-                                      # пароль, который указали при установке PostgreSQL
-                                      password=self.__password,
-                                      host=self.host,
-                                      port=self.port,
-                                      database="postgres")
-        cursor = connection.cursor()
+
+        session = self.session
         select_result = None
-        try:
-            select_query = '''SELECT * from programs;'''
-            cursor.execute(select_query)
-            select_result = cursor.fetchall()
-        except Error:
-            pass
-        finally:
-            if connection:
-                cursor.close()
-                connection.close()
+        select_result = session.query(Programs).all()
         return select_result

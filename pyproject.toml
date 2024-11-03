@@ -2,16 +2,20 @@
 name = "project"
 version = "0.2.0"
 description = ""
-authors = ["Efim"]
+authors = ["CuasarN1 <55405975+CuasarN1@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-psycopg2 = "^2.9.10"
+sqlalchemy = "^2.0.35"
 fastapi = "^0.115.2"
-pytest = "^8.3.3"
-uvicorn = "^0.32.0"
-
+pydantic-settings = "^2.5.2"
+uvicorn = "^0.31.1"
+asyncpg = "^0.29.0"
+greenlet = "^3.1.1"
+alembic = "^1.13.3"
+tenacity = "^9.0.0"
+psycopg2 = "^2.9.10"
 
 
 [build-system]

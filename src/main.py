@@ -1,8 +1,5 @@
 from fastapi import FastAPI
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2 import Error
-from db_manager.db_manager import DBManager
+from src.db_manager.db_manager import DBManager
 
 
 
@@ -14,7 +11,8 @@ def get_programs():
     programs = db_manager.get_programs()
     programs_name_and_rating = []
     for program in programs:
-        programs_name_and_rating.append({'name': program[1], 'ratings': program[3]})
+        print(program)
+        programs_name_and_rating.append({'name': program.program_name, 'ratings': program.program_ratings})
     return {"все программы": programs_name_and_rating}
 
 
