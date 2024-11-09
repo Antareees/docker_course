@@ -1,10 +1,13 @@
 from fastapi import FastAPI
-from src.db_manager.db_manager import DBManager
-
+from db_manager.db_manager import DBManager
+import asyncio
+import logging
+import uvicorn
 
 
 app = FastAPI()
-db_manager = DBManager("postgres", "postgres", "db", '5432')
+db_manager = DBManager("postgres", "postgres")
+
 
 @app.get("/programs")
 def get_programs():
@@ -19,3 +22,18 @@ def get_programs():
 @app.get("/")
 def get_init():
     return {"все программы": "/programs"}
+
+
+async def run() -> None:
+    config = uvicorn.Config("main:app", host="0.0.0.0", port=8000, reload=False)
+    server = uvicorn.Server(config=config)
+    tasks = (
+        asyncio.create_task(server.serve()),
+    )
+
+    await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run())
