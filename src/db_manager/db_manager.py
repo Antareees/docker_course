@@ -7,7 +7,7 @@ class DBManager:
     def __init__(self, user, password) -> None:
         self.user = user
         self.__password = password
-        self.engine = create_engine("postgresql+psycopg2://postgres:postgres@postgres:5432/postgres")
+        self.engine = create_engine("postgresql+psycopg2://postgres:postgres@postgres:8033/postgres")
         self.session = Session(bind=self.engine)
 
     def get_programs(self) -> list:
